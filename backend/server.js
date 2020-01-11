@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const blogRoutes = require("./routes/blog"); // bring in routes
 require("dotenv").config();
 
 // app
@@ -26,15 +27,13 @@ app.use(morgan("dev")); // gives us access to endpoints in the console
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+// routes middleware
+app.use("/api", blogRoutes); // prefix all routes with '/api'
+
 // cors
 if (process.env.NODE_ENV === "development") {
   app.use(cors({ origin: `${process.env.CLIENT_URL}` }));
 }
-
-// routes
-app.get("/api", (req, res) => {
-  res.json({ time: Date().toString() });
-});
 
 // port
 const port = process.env.PORT || 8000; // use the port in our env file or default 8000
