@@ -63,3 +63,15 @@ exports.signin = (req, res) => {
     });
   });
 };
+
+exports.signout = (req, res) => {
+  res.clearCookie("token");
+  res.json({
+    message: "Successfully signed out"
+  });
+};
+
+// middleware to create protected routes
+exports.requireSignin = expressJwt({
+  secret: process.env.JWT_SECRET
+});
