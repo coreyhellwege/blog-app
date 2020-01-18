@@ -1,15 +1,15 @@
 import Layout from "../components/Layout";
 import Link from "next/link";
 
-const Index = () => {
+const Signup = () => {
   return (
     <Layout>
-      <h2>Index Page</h2>
-      <Link href="/signup">
-        <a>Sign Up</a>
+      <h2>Signup Page</h2>
+      <Link href="/">
+        <a>Home</a>
       </Link>
     </Layout>
   );
 };
 
-export default Index;
+export default Signup;
