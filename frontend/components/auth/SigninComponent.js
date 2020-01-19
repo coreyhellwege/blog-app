@@ -6,7 +6,7 @@ const SigninComponent = () => {
   // state
   const [values, setValues] = useState({
     email: "coreyhellwege@gmail.com",
-    password: "123456789",
+    password: "password",
     error: "",
     loading: false,
     message: "",
