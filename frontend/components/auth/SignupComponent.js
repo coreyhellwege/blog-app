@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { signup } from "../../actions/auth";
+import { useState, useEffect } from "react";
+import { signup, isAuth } from "../../actions/auth";
+import Router from "next/router";
 
 const SignupComponent = () => {
   // state
@@ -14,6 +15,11 @@ const SignupComponent = () => {
   });
 
   const { name, email, password, error, loading, message, showForm } = values; // destructure
+
+  // runs automatically whenever there is a change in state. (replaces older lifecycle methods)
+  useEffect(() => {
+    isAuth() && Router.push(`/`);
+  }, []);
 
   const handleSubmit = e => {
     e.preventDefault();
