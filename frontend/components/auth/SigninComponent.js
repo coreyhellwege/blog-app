@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { signin } from "../../actions/auth";
+import { signin, authenticate } from "../../actions/auth";
 import Router from "next/router";
 
 const SigninComponent = () => {
@@ -27,8 +27,9 @@ const SigninComponent = () => {
         // save users token to cookies
         // save users info to localstorage
         // authenticate user
-        // redirect user to specific page
-        Router.push(`/`);
+        authenticate(data, () => {
+          Router.push(`/`); // redirect user to specific page
+        });
       }
     });
   };

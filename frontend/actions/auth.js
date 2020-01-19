@@ -1,4 +1,5 @@
 import fetch from "isomorphic-fetch";
+import cookie from "js-cookie";
 import { API } from "../config";
 
 export const signup = user => {
@@ -29,4 +30,59 @@ export const signin = user => {
       return response.json();
     })
     .catch(err => console.log(err));
+};
+
+export const setCookie = (key, value) => {
+  if (process.browser) {
+    cookie.set(key, value, {
+      expires: 1 // day
+    });
+  }
+};
+
+export const removeCookie = key => {
+  if (process.browser) {
+    cookie.remove(key, {
+      expires: 1 // day
+    });
+  }
+};
+
+export const getCookie = key => {
+  if (process.browser) {
+    cookie.get(key);
+  }
+};
+
+export const setLocalStorage = (key, value) => {
+  if (process.browser) {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+};
+
+export const removeLocalStorage = (key, value) => {
+  if (process.browser) {
+    localStorage.removeItem(key);
+  }
+};
+
+// authenticate user by passing data to cookie and localstorage
+export const authenticate = (data, next) => {
+  setCookie("token", data.token);
+  setLocalStorage("user", data.user);
+  next();
+};
+
+// returns a logged in user
+export const isAuth = () => {
+  if (process.browser) {
+    const cookieChecked = getCookie("token");
+    if (cookieChecked) {
+      if (localStorage.getItem("user")) {
+        return JSON.parse(localStorage.getItem("user")); // parse json object back into js
+      } else {
+        return false;
+      }
+    }
+  }
 };
