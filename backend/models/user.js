@@ -39,7 +39,8 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: Number,
-      trim: true
+      trim: true,
+      default: 0
     },
     photo: {
       data: Buffer,
@@ -83,7 +84,7 @@ userSchema.methods = {
         .createHmac("sha1", this.salt)
         .update(password)
         .digest("hex");
-    } catch (error) {
+    } catch (err) {
       return "";
     }
   },

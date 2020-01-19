@@ -21,7 +21,7 @@ exports.signup = (req, res) => {
     newUser.save((error, success) => {
       if (error) {
         return res.status(400).json({
-          error: error
+          error: "Could not sign up user"
         });
       }
       res.json({
