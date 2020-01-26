@@ -75,3 +75,39 @@ exports.signout = (req, res) => {
 exports.requireSignin = expressJwt({
   secret: process.env.JWT_SECRET
 });
+
+exports.authMiddleware = (req, res, next) => {
+  const authUserId = req.user._id;
+  // get user by id
+  User.findById({ _id: authUserId }).exec((err, user) => {
+    if (err || !user) {
+      return res.status(400).json({
+        error: "User not found"
+      });
+    }
+    // return the user
+    req.profile = user;
+    next();
+  });
+};
+
+exports.adminMiddleware = (req, res, next) => {
+  const adminUserId = req.user._id;
+  // get user by id
+  User.findById({ _id: adminUserId }).exec((err, user) => {
+    if (err || !user) {
+      return res.status(400).json({
+        error: "User not found"
+      });
+    }
+    // check user role
+    if (user.role !== 1) {
+      return res.status(400).json({
+        error: "Admin resource only. Access denied."
+      });
+    }
+    // return the user
+    req.profile = user;
+    next();
+  });
+};

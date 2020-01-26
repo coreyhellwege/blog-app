@@ -20,11 +20,11 @@ router.post("/signin", userSignInValidator, runValidation, signin);
 router.get("/signout", signout);
 
 // test
-router.get("/secret", requireSignin, (req, res) => {
-  res.json({
-    message: "You have access to a protected page"
-  });
-});
+// router.get("/secret", requireSignin, (req, res) => {
+//   res.json({
+//     user: req.user
+//   });
+// });
 
 // export routes
 module.exports = router;
