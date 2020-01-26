@@ -33,7 +33,12 @@ const SigninComponent = () => {
         // save users info to localstorage
         // authenticate user
         authenticate(data, () => {
-          Router.push(`/`); // redirect user to specific page
+          // redirect user to specific page based on their role
+          if (isAuth() && isAuth().role === 1) {
+            Router.push(`/admin`);
+          } else {
+            Router.push(`/user`);
+          }
         });
       }
     });
