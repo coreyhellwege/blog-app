@@ -19,10 +19,6 @@ class MyDocument extends Document {
             href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css"
           />
           <link rel="stylesheet" href="/public/static/css/styles.css" />
-          <link
-            rel="stylesheet"
-            href="//cdn.quilljs.com/1.2.6/quill.snow.css"
-          ></link>
         </Head>
         <body>
           <Main />
