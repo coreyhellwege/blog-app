@@ -7,6 +7,7 @@ const stripHtml = require("string-strip-html");
 const _ = require("lodash");
 const { errorHandler } = require("../helpers/dbErrorHandler");
 const fs = require("fs");
+const { smartTrim } = require("../helpers/blog");
 
 exports.create = (req, res) => {
   // handle form
@@ -51,6 +52,7 @@ exports.create = (req, res) => {
     let blog = new Blog();
     blog.title = title; // aka fields.title
     blog.body = body;
+    blog.excerpt = smartTrim(body, 320, " ", "...");
     blog.slug = slugify(title).toLowerCase();
     blog.metaTitle = `${title} | ${process.env.APP_NAME}`;
     blog.metaDesc = stripHtml(body.substring(0, 160)); // first 160 chars
