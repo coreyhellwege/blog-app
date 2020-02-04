@@ -48,6 +48,8 @@ const CreateBlog = ({ router }) => {
     hidePublishButton
   } = values;
 
+  const token = getCookie("token");
+
   // instantiate new form data when component loads in browser using useEffect
   useEffect(() => {
     // when component mounts the form data is ready to use
@@ -76,9 +78,24 @@ const CreateBlog = ({ router }) => {
     });
   };
 
-  const publishBlog = e => {
-    e.preventDefault(); // so page doesn't refresh
-    console.log("ready to publish blog");
+  const publishBlog = error => {
+    error.preventDefault(); // so page doesn't refresh
+    createBlog(formData, token).then(data => {
+      if (data.error) {
+        setValues({ ...values, error: data.error });
+      } else {
+        // if success, clear the fields
+        setValues({
+          ...values,
+          title: "",
+          error: "",
+          success: `A new blog titled "${data.title}" is created`
+        });
+        setBody(""); // also clears out localStorage
+        setCategories([]);
+        setTags([]);
+      }
+    });
   };
 
   const handleChange = name => e => {
@@ -216,6 +233,22 @@ const CreateBlog = ({ router }) => {
           {/* {JSON.stringify(router)}; // see what the router is */}
         </div>
         <div className="col-md-4">
+          <div>
+            <div className="form-group pb-2">
+              <h5>Featured Image</h5>
+              <hr />
+              <small className="text-muted">Max size: 1mb</small>
+              <label className="btn btn-outline-info">
+                Upload Featured Image
+                <input
+                  onChange={handleChange("photo")}
+                  type="file"
+                  accept="image/*"
+                  hidden
+                />
+              </label>
+            </div>
+          </div>
           <div>
             <h5>Categories</h5>
             <hr />
