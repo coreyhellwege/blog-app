@@ -1,13 +1,14 @@
 import Link from "next/link";
 import Router from "next/router";
 import dynamic from "next/dynamic";
-import { withRouter } from "next/Router";
+import { withRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { isAuth, getCookie } from "../../actions/auth";
 import { getCategories } from "../../actions/category";
 import { getTags } from "../../actions/tag";
 import { createBlog } from "../../actions/blog";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import { QuillModules, QuillFormats } from "../../helpers/quill";
 
 const CreateBlog = ({ router }) => {
   // save form data in localstorage
@@ -26,8 +27,10 @@ const CreateBlog = ({ router }) => {
   // state
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
+
   const [checked, setChecked] = useState([]); // categories
   const [checkedTag, setCheckedTag] = useState([]); // tags
+
   const [body, setBody] = useState(blogFromLocalStor()); // if there's form data saved in localstorage, populate it in the state as a default value
   const [values, setValues] = useState({
     error: "",
@@ -78,8 +81,8 @@ const CreateBlog = ({ router }) => {
     });
   };
 
-  const publishBlog = error => {
-    error.preventDefault(); // so page doesn't refresh
+  const publishBlog = e => {
+    e.preventDefault(); // so page doesn't refresh
     createBlog(formData, token).then(data => {
       if (data.error) {
         setValues({ ...values, error: data.error });
@@ -133,7 +136,7 @@ const CreateBlog = ({ router }) => {
     } else {
       all.splice(clickedCategory, 1);
     }
-    console.log(all);
+    // console.log(all);
     setChecked(all);
     // send data to backend
     formData.set("categories", all);
@@ -188,6 +191,24 @@ const CreateBlog = ({ router }) => {
     );
   };
 
+  const showError = () => {
+    <div
+      className="alert alert-danger"
+      style={{ display: error ? "" : "none" }}
+    >
+      {error}
+    </div>;
+  };
+
+  const showSuccess = () => {
+    <div
+      className="alert alert-success"
+      style={{ display: success ? "block" : "none" }}
+    >
+      {success}
+    </div>;
+  };
+
   const createBlogForm = () => {
     return (
       <form onSubmit={publishBlog}>
@@ -222,15 +243,8 @@ const CreateBlog = ({ router }) => {
       <div className="row">
         <div className="col-md-8">
           {createBlogForm()}
-          <hr />
-          {JSON.stringify(title)}
-          <hr />
-          {JSON.stringify(body)}
-          <hr />
-          {JSON.stringify(categories)}
-          <hr />
-          {JSON.stringify(tags)}
-          {/* {JSON.stringify(router)}; // see what the router is */}
+          {showError()}
+          {showSuccess()}
         </div>
         <div className="col-md-4">
           <div>
