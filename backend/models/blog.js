@@ -42,7 +42,7 @@ const blogSchema = new mongoose.Schema(
     categories: [{ type: ObjectId, ref: "Category", required: true }], // references Category model
     tags: [{ type: ObjectId, ref: "Tag", required: true }] // references Tag model
   },
-  { timestamp: true }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Blog", blogSchema);
