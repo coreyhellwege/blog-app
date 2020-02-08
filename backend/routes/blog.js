@@ -6,7 +6,8 @@ const {
   update,
   remove,
   list,
-  listAllBlogsCategoriesTags
+  listAllBlogsCategoriesTags,
+  photo
 } = require("../controllers/blog");
 const {
   requireSignin,
@@ -21,6 +22,7 @@ router.post("/blogs-categories-tags", listAllBlogsCategoriesTags);
 router.get("/blog/:slug", read);
 router.delete("/blog/:slug", requireSignin, authMiddleware, remove);
 router.put("/blog/:slug", requireSignin, authMiddleware, update);
+router.get("/blog/photo/:slug", photo);
 
 // export routes
 module.exports = router;

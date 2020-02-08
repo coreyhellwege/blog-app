@@ -115,6 +115,7 @@ exports.create = (req, res) => {
 exports.read = (req, res) => {
   const slug = req.params.slug.toLowerCase();
   Blog.findOne({ slug })
+    // .select("-photo")
     .populate("categories", "_id name slug")
     .populate("tags", "_id name slug")
     .populate("postedBy", "_id name username")
@@ -191,6 +192,7 @@ exports.update = (req, res) => {
             error: errorHandler(err) // error will come from Mongoose
           });
         }
+        // result.photo = undefined;
         res.json(result);
       });
     });
@@ -277,5 +279,20 @@ exports.listAllBlogsCategoriesTags = (req, res) => {
           res.json({ blogs, categories, tags, size: blogs.length });
         });
       });
+    });
+};
+
+exports.photo = (req, res) => {
+  const slug = req.params.slug.toLowerCase();
+  Blog.findOne({ slug })
+    .select("photo")
+    .exec((err, blog) => {
+      if (err || !blog) {
+        return res.status(400).json({
+          error: errorHandler(err)
+        });
+      }
+      res.set("Content-Type", blog.photo.contentType);
+      return res.send(blog.photo.data);
     });
 };

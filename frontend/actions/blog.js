@@ -1,6 +1,7 @@
 import fetch from "isomorphic-fetch";
 import { API } from "../config";
 
+// endpoints
 export const createBlog = (blog, token) => {
   return fetch(`${API}/blog`, {
     method: "POST",
@@ -9,6 +10,19 @@ export const createBlog = (blog, token) => {
       Authorization: `Bearer ${token}`
     },
     body: blog // send form data
+  })
+    .then(response => {
+      return response.json();
+    })
+    .catch(err => console.log(err));
+};
+
+export const listBlogsWithCategoriesAndTags = () => {
+  return fetch(`${API}/blogs-categories-tags`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json"
+    }
   })
     .then(response => {
       return response.json();
