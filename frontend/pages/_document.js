@@ -22,11 +22,7 @@ class MyDocument extends Document {
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css"
           />
-          <link
-            rel="stylesheet"
-            type="text/css"
-            href="/public/static/css/styles.css"
-          />
+          <link rel="stylesheet" href="/_next/static/styles.css" />
         </Head>
         <body>
           <Main />
