@@ -112,20 +112,103 @@ exports.create = (req, res) => {
   });
 };
 
-exports.create = (req, res) => {
-  //
-};
-
 exports.read = (req, res) => {
-  //
+  const slug = req.params.slug.toLowerCase();
+  Blog.findOne({ slug })
+    .populate("categories", "_id name slug")
+    .populate("tags", "_id name slug")
+    .populate("postedBy", "_id name username")
+    .select(
+      "_id title body slug excerpt categories tags postedBy createdAt updatedAt"
+    )
+    .exec((err, data) => {
+      if (err) {
+        return res.json({
+          error: errorHandler(err)
+        });
+      }
+      res.json(data); // return the blogs
+    });
 };
 
 exports.update = (req, res) => {
-  //
+  const slug = req.params.slug.toLowerCase();
+
+  Blog.findOne({ slug }).exec((err, oldBlog) => {
+    if (err) {
+      return res.status(400).json({
+        error: errorHandler(err)
+      });
+    }
+    let form = new formidable.IncomingForm(); // get form data
+    form.keepExtensions = true; // keep files' default extensions
+
+    // parse form data into a js object
+    form.parse(req, (err, fields, files) => {
+      if (err) {
+        return res.status(400).json({
+          error: "Image could not be uploaded"
+        });
+      }
+
+      let slugBeforeMerge = oldBlog.slug; // slug doesn't change (because it's indexed by Google after being created)
+      oldBlog = _.merge(oldBlog, fields); // merge in only data that has changed
+      oldBlog.slug = slugBeforeMerge;
+
+      const { body, desc, categories, tags } = fields;
+
+      // if body has changed also update excerpt
+      if (body) {
+        oldBlog.excerpt = smartTrim(body, 320, "", " ...");
+        // update meta desc
+        oldBlog.desc = stripHtml(body.substring(0, 160));
+      }
+
+      if (categories) {
+        oldBlog.categories = categories.split(","); // to generate array
+      }
+
+      if (tags) {
+        oldBlog.tags = tags.split(",");
+      }
+
+      // update photo
+      if (files.photo) {
+        if (files.photo.size > 10000000) {
+          // 1mb
+          return res.status(400).json({
+            error: "Image size must be less than 1mb"
+          });
+        }
+        oldBlog.photo.data = fs.readFileSync(files.photo.path);
+        oldBlog.photo.contentType = files.photo.type;
+      }
+
+      // save blog to db
+      oldBlog.save((err, result) => {
+        if (err) {
+          return res.status(400).json({
+            error: errorHandler(err) // error will come from Mongoose
+          });
+        }
+        res.json(result);
+      });
+    });
+  });
 };
 
 exports.remove = (req, res) => {
-  //
+  const slug = req.params.slug.toLowerCase();
+  Blog.findOneAndRemove({ slug }).exec((err, data) => {
+    if (err) {
+      return res.json({
+        error: errorHandler(err)
+      });
+    }
+    res.json({
+      message: "Blog successfully deleted"
+    });
+  });
 };
 
 exports.list = (req, res) => {
