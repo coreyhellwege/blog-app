@@ -9,7 +9,7 @@ import { API, DOMAIN, APP_NAME, FB_APP_ID } from "../../config";
 
 // props are accessed from the getInitialProps() method
 const Blogs = ({ blogs, categories, tags, size, router }) => {
-  const head = () => {
+  const head = () => (
     <Head>
       <title>Climate Facts | {APP_NAME}</title>
       <meta name="description" content="Climate Science for dummies" />
@@ -32,8 +32,8 @@ const Blogs = ({ blogs, categories, tags, size, router }) => {
       />
       <meta property="og:image:type" content="image/jpg" />
       <meta property="fb:app_id" content={`${FB_APP_ID}`} />
-    </Head>;
-  };
+    </Head>
+  );
 
   const showAllBlogs = () => {
     return blogs.map((blog, i) => {
