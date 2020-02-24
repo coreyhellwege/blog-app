@@ -242,6 +242,7 @@ const CreateBlog = ({ router }) => {
       </form>
     );
   };
+
   return (
     <div className="container-fluid pb-5">
       <div className="row">
