@@ -208,6 +208,7 @@ exports.remove = (req, res) => {
       });
     }
     res.json({
+      // must return message as a string so it works in the frontend
       message: "Blog successfully deleted"
     });
   });
