@@ -46,6 +46,24 @@ const BlogRead = () => {
     }
   };
 
+  const showUpdateButton = blog => {
+    // regular user
+    if (isAuth() && isAuth().role === 0) {
+      return (
+        <Link href={`/user/crud/blog/${blog.slug}`}>
+          <a className="btn btn-sm btn-warning ml-2">Update</a>
+        </Link>
+      );
+      // admin user
+    } else if (isAuth() && isAuth().role === 1) {
+      return (
+        <Link href={`/admin/crud/${blog.slug}`}>
+          <a className="btn btn-sm btn-warning ml-2">Update</a>
+        </Link>
+      );
+    }
+  };
+
   const showAllBlogs = () => {
     return blogs.map((blog, i) => {
       return (
@@ -55,12 +73,13 @@ const BlogRead = () => {
             Written by {blog.postedBy.name} | Published on
             {moment(blog.updatedAt).fromNow()}
           </p>
-          <buttn
+          <button
             className="btn btn-sm btn-danger"
             onClick={() => deleteConfirm(blog.slug)}
           >
             Delete
-          </buttn>
+          </button>
+          {showUpdateButton(blog)}
         </div>
       );
     });
