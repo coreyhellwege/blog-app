@@ -21,6 +21,12 @@ const BlogUpdate = ({ router }) => {
     body: ""
   });
 
+  const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]);
+
+  const [checked, setChecked] = useState([]); // categories
+  const [checkedTag, setCheckedTag] = useState([]); // tags
+
   // destructure so that we can access the above variables more easily
   const { error, success, formData, title } = values;
 
@@ -29,6 +35,8 @@ const BlogUpdate = ({ router }) => {
     // make form data available
     setValues({ ...values, formData: new FormData() });
     initBlog();
+    initCategories();
+    initTags();
   }, [router]); // trigger useEffect whenever the router changes
 
   const initBlog = () => {
@@ -41,13 +49,108 @@ const BlogUpdate = ({ router }) => {
           // make the blog available in the state
           setValues({ ...values, title: data.title });
           setBody(data.body);
+          setCategoriesArray(data.categories);
+          setTagsArray(data.tags);
         }
       });
     }
   };
 
-  // event handlers
+  const setCategoriesArray = blogCategories => {
+    let ca = [];
+    blogCategories.map((c, i) => {
+      ca.push(c._id);
+    });
+    setChecked(ca);
+  };
 
+  const setTagsArray = blogTags => {
+    let ta = [];
+    blogTags.map((t, i) => {
+      ta.push(t._id);
+    });
+    setCheckedTag(ta);
+  };
+
+  const initCategories = () => {
+    getCategories().then(data => {
+      if (data.error) {
+        setValues({ ...values, error: data.error });
+      } else {
+        setCategories(data);
+      }
+    });
+  };
+
+  const initTags = () => {
+    getTags().then(data => {
+      if (data.error) {
+        setValues({ ...values, error: data.error });
+      } else {
+        setTags(data);
+      }
+    });
+  };
+
+  const findOutCategory = c => {
+    // search the cat id in the array of categories
+    const result = checked.indexOf(c); // -1 = not found
+
+    // if it's found, return true
+    if (result !== -1) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const findOutTag = t => {
+    // search the tag id in the array of tags
+    const result = checkedTag.indexOf(t); // -1 = not found
+
+    // if it's found, return true
+    if (result !== -1) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const showCategories = () => {
+    return (
+      categories &&
+      categories.map((c, i) => (
+        <li key={i} className="list-unstyled">
+          <input
+            onChange={handleToggle(c._id)}
+            checked={findOutCategory(c._id)}
+            type="checkbox"
+            className="mr-2"
+          />
+          <label className="form-check-label">{c.name}</label>
+        </li>
+      ))
+    );
+  };
+
+  const showTags = () => {
+    return (
+      tags &&
+      tags.map((t, i) => (
+        <li key={i} className="list-unstyled">
+          <input
+            onChange={handleTagsToggle(t._id)}
+            checked={findOutTag(t._id)}
+            type="checkbox"
+            className="mr-2"
+          />
+          <label className="form-check-label">{t.name}</label>
+        </li>
+      ))
+    );
+  };
+
+  // event handlers
   const handleChange = name => e => {
     // console.log(e.target.value);
     const value = name === "photo" ? e.target.files[0] : e.target.value;
@@ -66,6 +169,44 @@ const BlogUpdate = ({ router }) => {
 
   const editBlog = e => {
     console.log("updated blog");
+  };
+
+  const handleToggle = c => () => {
+    setValues({ ...values, error: "" });
+
+    // check if category ID is already in state
+    // indexOf will either return the cat, or -1 if null
+    const clickedCategory = checked.indexOf(c);
+    const all = [...checked];
+
+    // if state is empty, push the cat in
+    if (clickedCategory === -1) {
+      all.push(c);
+      // if cat is in the state, get it out
+    } else {
+      all.splice(clickedCategory, 1);
+    }
+    console.log(all);
+    setChecked(all);
+    // send data to backend
+    formData.set("categories", all);
+  };
+
+  const handleTagsToggle = t => () => {
+    setValues({ ...values, error: "" });
+
+    const clickedTag = checkedTag.indexOf(t);
+    const all = [...checkedTag];
+
+    if (clickedTag === -1) {
+      all.push(t);
+    } else {
+      all.splice(clickedTag, 1);
+    }
+    console.log(all);
+    setCheckedTag(all);
+
+    formData.set("tags", all);
   };
 
   const updateBlogForm = () => {
@@ -111,7 +252,32 @@ const BlogUpdate = ({ router }) => {
           <div>
             <div className="form-group pb-2">
               <h5>Featured Image</h5>
+              <hr />
+              <small className="text-muted">Max size: 1mb</small>
+              <label className="btn btn-outline-info">
+                Upload Featured Image
+                <input
+                  onChange={handleChange("photo")}
+                  type="file"
+                  accept="image/*"
+                  hidden
+                />
+              </label>
             </div>
+          </div>
+          <div>
+            <h5>Categories</h5>
+            <hr />
+            <ul style={{ maxHeight: "100px", overflowY: "scroll" }}>
+              {showCategories()}
+            </ul>
+          </div>
+          <div>
+            <h5>Tags</h5>
+            <hr />
+            <ul style={{ maxHeight: "100px", overflowY: "scroll" }}>
+              {showTags()}
+            </ul>
           </div>
         </div>
       </div>
