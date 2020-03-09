@@ -25,6 +25,7 @@ const SingleBlog = ({ blog, query }) => {
     loadRelated();
   }, []);
 
+  // meta head section for SEO
   const head = () => (
     <Head>
       <title>
@@ -37,11 +38,10 @@ const SingleBlog = ({ blog, query }) => {
       <meta property="og:type" content="webiste" />
       <meta property="og:url" content={`${DOMAIN}/blogs/${query.slug}`} />
       <meta property="og:site_name" content={`${APP_NAME}`} />
-
       <meta property="og:image" content={`${API}/blog/photo/${blog.slug}`} />
       <meta
         property="og:image:secure_url"
-        ccontent={`${API}/blog/photo/${blog.slug}`}
+        content={`${API}/blog/photo/${blog.slug}`}
       />
       <meta property="og:image:type" content="image/jpg" />
       <meta property="fb:app_id" content={`${FB_APP_ID}`} />
