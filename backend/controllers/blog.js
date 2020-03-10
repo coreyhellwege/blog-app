@@ -321,6 +321,7 @@ exports.listRelated = (req, res) => {
 };
 
 exports.listSearch = (req, res) => {
+  console.log(req.query);
   // send request query by name of 'search'
   const { search } = req.query;
   // find blogs based on the search

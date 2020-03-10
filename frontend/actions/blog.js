@@ -1,5 +1,6 @@
 import fetch from "isomorphic-fetch";
 import { API } from "../config";
+import queryString from "query-string";
 
 // endpoints
 export const createBlog = (blog, token) => {
@@ -94,6 +95,24 @@ export const updateBlog = (blog, token, slug) => {
       Authorization: `Bearer ${token}`
     },
     body: blog // send form data
+  })
+    .then(response => {
+      return response.json();
+    })
+    .catch(err => console.log(err));
+};
+
+export const listSearch = params => {
+  console.log("search params:", params); // before
+
+  // create query
+  let query = queryString.stringify(params);
+  console.log("query params:", query); // after
+
+  // instead of passing query params (like you would for a post method)
+  // we're using a get method and passing a query string:
+  return fetch(`${API}/blogs/search?${query}`, {
+    method: "GET"
   })
     .then(response => {
       return response.json();
