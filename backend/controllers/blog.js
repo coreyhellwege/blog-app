@@ -319,3 +319,31 @@ exports.listRelated = (req, res) => {
       res.json(blogs);
     });
 };
+
+exports.listSearch = (req, res) => {
+  // send request query by name of 'search'
+  const { search } = req.query;
+  // find blogs based on the search
+  if (search) {
+    // search title and body
+    Blog.find(
+      {
+        // using regex with the mongoose $or method
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { body: { $regex: search, $options: "i" } }
+        ]
+      },
+      (err, blogs) => {
+        if (err) {
+          return res.status(400).json({
+            error: errorHandler(err)
+          });
+        }
+        // don't need to send the entire blog object, only the title is necessary
+        res.json(blogs);
+      }
+      // de-select photo and body
+    ).select("-photo -body");
+  }
+};
