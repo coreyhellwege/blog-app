@@ -6,7 +6,7 @@ const slugify = require("slugify");
 const stripHtml = require("string-strip-html");
 const _ = require("lodash");
 const { errorHandler } = require("../helpers/dbErrorHandler");
-const fs = require("fs");
+const fs = require("fs"); // file system
 const { smartTrim } = require("../helpers/blog");
 
 exports.create = (req, res) => {
