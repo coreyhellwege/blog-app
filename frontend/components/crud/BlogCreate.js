@@ -259,6 +259,7 @@ const CreateBlog = ({ router }) => {
               <h5>Featured Image</h5>
               <hr />
               <small className="text-muted">Max size: 1mb</small>
+              <hr />
               <label className="btn btn-outline-info">
                 Upload Featured Image
                 <input

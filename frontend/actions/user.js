@@ -37,7 +37,9 @@ export const update = (token, user) => {
     headers: {
       Accept: "application/json",
       Authorization: `Bearer ${token}`
-    }
+    },
+    // send the body (which contains user)
+    body: user
   })
     .then(response => {
       return response.json();

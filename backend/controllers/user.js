@@ -53,6 +53,8 @@ exports.publicProfile = (req, res) => {
 // update user method
 exports.update = (req, res) => {
   let form = new formidable.IncomingForm();
+  form.keepExtension = true;
+
   // parse form data
   form.parse(req, (err, fields, files) => {
     // handle errors
@@ -62,11 +64,17 @@ exports.update = (req, res) => {
       });
     }
 
-    // save user
-    // note: profile is available in the request because we used authMiddleware
+    // save user (note: profile is available in the request from authMiddleware)
     let user = req.profile;
     // use lodash extend method to update fields that have changed
     user = _.extend(user, fields);
+
+    // password length validation
+    if (fields.password && fields.password.length < 6) {
+      return res.status(400).json({
+        error: "Password must be mininum 6 characters long"
+      });
+    }
 
     // handle files
     if (files.photo) {
@@ -75,11 +83,10 @@ exports.update = (req, res) => {
           error: "Image size should be less than 1mb"
         });
       }
+      // save photo
+      user.photo.data = fs.readFileSync(files.photo.path);
+      user.photo.contentType = files.photo.type;
     }
-
-    // save photo
-    user.photo.data = fs.readFileSync(files.photo.path);
-    user.photo.contentType = files.photo.type;
 
     // save updated user
     user.save((err, result) => {
