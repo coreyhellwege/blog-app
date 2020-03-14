@@ -7,7 +7,7 @@ const {
   adminMiddleware
 } = require("../controllers/auth");
 
-router.get("/profile", requireSignin, authMiddleware, read);
+router.get("/user/profile", requireSignin, authMiddleware, read);
 router.get("/user/:username", publicProfile); // public profile
 router.put("/user/update", requireSignin, authMiddleware, update);
 router.get("/user/photo/:username", photo); // get profile photo
