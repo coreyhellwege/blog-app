@@ -8,6 +8,7 @@ import { API } from "../../config";
 const ProfileUpdate = () => {
   const [values, setValues] = useState({
     username: "",
+    username_for_photo: "",
     name: "",
     email: "",
     about: "",
@@ -16,13 +17,14 @@ const ProfileUpdate = () => {
     success: false,
     loading: false,
     photo: "",
-    userData: "" // will contain form data
+    userData: process.browser && new FormData() // will contain form data
   });
 
   const token = getCookie("token");
 
   const {
     username,
+    username_for_photo,
     name,
     email,
     about,
@@ -43,6 +45,7 @@ const ProfileUpdate = () => {
         setValues({
           ...values,
           username: data.username,
+          username_for_photo: data.username,
           name: data.name,
           email: data.email,
           about: data.about
@@ -53,6 +56,7 @@ const ProfileUpdate = () => {
 
   useEffect(() => {
     init();
+    setValues({ ...values, userData: new FormData() });
   }, []);
 
   // event handlers
@@ -60,14 +64,14 @@ const ProfileUpdate = () => {
   const handleChange = name => e => {
     // console.log(e.target.value);
     const value = name === "photo" ? e.target.files[0] : e.target.value;
-    let userFormData = new FormData();
     // populate form data with values
-    userFormData.set(name, value);
+    userData.set(name, value);
+    console.log(...userData);
     // update state & clear any previous state
     setValues({
       ...values,
       [name]: value,
-      userData: userFormData,
+      userData,
       error: false,
       success: false
     });
@@ -95,6 +99,7 @@ const ProfileUpdate = () => {
             name: data.name,
             email: data.email,
             about: data.about,
+            password: "",
             success: true,
             loading: false
           });
@@ -103,11 +108,39 @@ const ProfileUpdate = () => {
     });
   };
 
+  // render submit messages
+  const showError = () => (
+    <div
+      className="alert alert-danger"
+      style={{ display: error ? "" : "none" }}
+    >
+      All fields are required
+    </div>
+  );
+
+  const showSuccess = () => (
+    <div
+      className="alert alert-success"
+      style={{ display: success ? "" : "none" }}
+    >
+      Profile successfully updated
+    </div>
+  );
+
+  const showLoading = () => (
+    <div
+      className="alert alert-info"
+      style={{ display: loading ? "" : "none" }}
+    >
+      Loading...
+    </div>
+  );
+
   const profileUpdateForm = () => (
     <form onSubmit={handleSubmit}>
       <div className="form-group">
         <label className="btn btn-outline-info">
-          Upload Profile Photo
+          Upload Profile photo
           <input
             onChange={handleChange("photo")}
             type="file"
@@ -162,39 +195,20 @@ const ProfileUpdate = () => {
         />
       </div>
       <div>
-        <button type="submit" className="btn btn-primary">
-          Submit
+        {showSuccess()}
+        {showError()}
+        {showLoading()}
+      </div>
+      <div>
+        <button
+          type="submit"
+          className="btn btn-primary"
+          disabled={!username || !name || !email}
+        >
+          Update
         </button>
       </div>
     </form>
-  );
-
-  // render submit messages
-  const showError = () => (
-    <div
-      className="alert alert-danger"
-      style={{ display: error ? "" : "none" }}
-    >
-      All fields are required
-    </div>
-  );
-
-  const showSuccess = () => (
-    <div
-      className="alert alert-success"
-      style={{ display: success ? "" : "none" }}
-    >
-      Profile successfully updated
-    </div>
-  );
-
-  const showLoading = () => (
-    <div
-      className="alert alert-info"
-      style={{ display: loading ? "" : "none" }}
-    >
-      Loading...
-    </div>
   );
 
   return (
@@ -203,18 +217,13 @@ const ProfileUpdate = () => {
         <div className="row">
           <div className="col-md-4">
             <img
-              src={`${API}/user/photo/${username}`}
+              src={`${API}/user/photo/${username_for_photo}`}
               className="img img-fluid img-thumbnail mb-3"
               style={{ maxHeight: "auto", maxWidth: "100%" }}
-              alt="user-profile"
+              alt="user profile"
             />
           </div>
-          <div className="col-md-8 mb-5">
-            {showError()}
-            {showSuccess()}
-            {showLoading()}
-            {profileUpdateForm()}
-          </div>
+          <div className="col-md-8 mb-5">{profileUpdateForm()}</div>
         </div>
       </div>
     </React.Fragment>
