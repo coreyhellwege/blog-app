@@ -96,8 +96,10 @@ exports.update = (req, res) => {
           error: errorHandler(err)
         });
       }
-      // dont return password hash
+      // don't need to return the following fields
       user.hashed_password = undefined;
+      user.salt = undefined;
+      user.photo = undefined;
       res.json(user);
     });
   });

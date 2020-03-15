@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import Router from "next/router";
-import { getCookie, isAuth } from "../../actions/auth";
+import { getCookie, isAuth, updateUser } from "../../actions/auth";
 import { getProfile, update } from "../../actions/user";
 import { API } from "../../config";
 
@@ -86,15 +86,18 @@ const ProfileUpdate = () => {
           loading: false
         });
       } else {
-        // show updated data
-        setValues({
-          ...values,
-          username: data.username,
-          name: data.name,
-          email: data.email,
-          about: data.about,
-          success: true,
-          loading: false
+        // first arg = user, second arg = callback
+        updateUser(data, () => {
+          // show updated data
+          setValues({
+            ...values,
+            username: data.username,
+            name: data.name,
+            email: data.email,
+            about: data.about,
+            success: true,
+            loading: false
+          });
         });
       }
     });

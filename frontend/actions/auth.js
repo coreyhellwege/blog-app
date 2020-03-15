@@ -100,3 +100,16 @@ export const isAuth = () => {
     }
   }
 };
+
+// update user in localstorage
+export const updateUser = (user, next) => {
+  if (process.browser) {
+    if (localStorage.getItem("user")) {
+      // parse user into a JS object
+      let auth = JSON.parse(localStorage.getItem("user"));
+      auth = user; // auth will now contain the updated user data
+      localStorage.setItem("user", JSON.stringify(auth));
+      next(); // continue on..
+    }
+  }
+};
