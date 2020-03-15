@@ -2,6 +2,7 @@ const User = require("../models/user");
 const shortId = require("shortid");
 const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
+const { errorHandler } = require("../helpers/dbErrorHandler");
 
 exports.signup = (req, res) => {
   // check if username alraedy exists
@@ -108,6 +109,25 @@ exports.adminMiddleware = (req, res, next) => {
     }
     // return the user
     req.profile = user;
+    next();
+  });
+};
+
+exports.canUpdateDeleteBlog = (req, res, next) => {
+  const slug = req.params.slug.toLowerCase();
+  Blog.findOne({ slug }).exec((err, data) => {
+    if (err) {
+      return res.status(400).json({
+        error: errorHandler(err)
+      });
+    }
+    let authorisedUser =
+      data.postedBy._id.toString() === req.profile._id.toString();
+    if (!authorisedUser) {
+      return res.status(400).json({
+        error: "Not authorised"
+      });
+    }
     next();
   });
 };

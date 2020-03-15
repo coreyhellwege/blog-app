@@ -9,12 +9,14 @@ const {
   listAllBlogsCategoriesTags,
   photo,
   listRelated,
-  listSearch
+  listSearch,
+  listByUser
 } = require("../controllers/blog");
 const {
   requireSignin,
   authMiddleware,
-  adminMiddleware
+  adminMiddleware,
+  canUpdateDeleteBlog
 } = require("../controllers/auth");
 
 // handle incoming routes
@@ -29,9 +31,22 @@ router.post("/blogs/related", listRelated);
 router.get("/blogs/search", listSearch);
 
 // auth user (non admin) crud
+router.get("/:username/blogs", listByUser);
 router.post("/user/blog", requireSignin, authMiddleware, create);
-router.delete("/user/blog/:slug", requireSignin, authMiddleware, remove);
-router.put("/user/blog/:slug", requireSignin, authMiddleware, update);
+router.delete(
+  "/user/blog/:slug",
+  requireSignin,
+  authMiddleware,
+  canUpdateDeleteBlog,
+  remove
+);
+router.put(
+  "/user/blog/:slug",
+  requireSignin,
+  authMiddleware,
+  canUpdateDeleteBlog,
+  update
+);
 
 // export routes
 module.exports = router;
