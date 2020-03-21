@@ -71,8 +71,16 @@ export const listRelated = blog => {
     .catch(err => console.log(err));
 };
 
-export const list = () => {
-  return fetch(`${API}/blogs`, {
+export const list = username => {
+  let listBlogEndpoint;
+  // dynamically assign endpoint based on if a username is given
+  if (username) {
+    listBlogEndpoint = `${API}/${username}/blogs`;
+  } else {
+    listBlogEndpoint = `${API}/blogs`;
+  }
+
+  return fetch(`${listBlogEndpoint}`, {
     method: "GET"
   })
     .then(response => {
@@ -82,7 +90,15 @@ export const list = () => {
 };
 
 export const removeBlog = (slug, token) => {
-  return fetch(`${API}/blog/${slug}`, {
+  let deleteBlogEndpoint;
+  // dynamically assign endpoint based on user role
+  if (isAuth() && isAuth().role === 1) {
+    deleteBlogEndpoint = `${API}/blog/${slug}`;
+  } else if (isAuth() && isAuth().role === 0) {
+    deleteBlogEndpoint = `${API}/user/blog/${slug}`;
+  }
+
+  return fetch(`${deleteBlogEndpoint}`, {
     method: "DELETE",
     headers: {
       Accept: "application/json",
@@ -97,7 +113,15 @@ export const removeBlog = (slug, token) => {
 };
 
 export const updateBlog = (blog, token, slug) => {
-  return fetch(`${API}/blog/${slug}`, {
+  let updateBlogEndpoint;
+  // dynamically assign endpoint based on user role
+  if (isAuth() && isAuth().role === 1) {
+    updateBlogEndpoint = `${API}/blog/${slug}`;
+  } else if (isAuth() && isAuth().role === 0) {
+    updateBlogEndpoint = `${API}/user/blog/${slug}`;
+  }
+
+  return fetch(`${updateBlogEndpoint}`, {
     method: "PUT",
     headers: {
       Accept: "application/json",
