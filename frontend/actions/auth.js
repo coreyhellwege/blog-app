@@ -1,6 +1,24 @@
 import fetch from "isomorphic-fetch";
 import cookie from "js-cookie";
 import { API } from "../config";
+import Router from "next/router";
+
+export const handleResponse = response => {
+  if (response.status === 401) {
+    // run signout() to remove token & user from LS, and pass a callback
+    signout(() => {
+      // redirect user to login agin
+      Router.push({
+        pathname: "/signin",
+        query: {
+          message: "Session expired. Please sign in."
+        }
+      });
+    });
+  } else {
+    return;
+  }
+};
 
 export const signup = user => {
   return fetch(`${API}/signup`, {
