@@ -49,6 +49,12 @@ const Header = () => {
                   <NavLink>Blogs</NavLink>
                 </Link>
               </NavItem>
+
+              <NavItem>
+                <Link href="/contact">
+                  <NavLink>Contact</NavLink>
+                </Link>
+              </NavItem>
             </React.Fragment>
 
             {!isAuth() && (

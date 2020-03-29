@@ -15,13 +15,12 @@ export const emailContactForm = data => {
   return fetch(`${emailEndpoint}`, {
     method: "POST",
     headers: {
-      Accept: "application/json"
+      Accept: "application/json",
+      "Content-Type": "application/json"
     },
     body: JSON.stringify(data)
   })
     .then(response => {
-      // before we return the response, pass it to handleResponse() to check if token is valid
-      handleResponse(response);
       return response.json();
     })
     .catch(err => console.log(err));
