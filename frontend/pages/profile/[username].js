@@ -4,6 +4,7 @@ import Layout from "../../components/Layout";
 import { userPublicProfile } from "../../actions/user";
 import { API, DOMAIN, APP_NAME, FB_APP_ID } from "../../config";
 import moment from "moment";
+import ContactForm from '../../components/form/ContactForm';
 
 const UserProfile = ({ user, blogs, query }) => {
   // meta head section for SEO
@@ -93,7 +94,7 @@ const UserProfile = ({ user, blogs, query }) => {
                   <h5 className="card-title bg-primary pt-4 pb-4 pl-4 pr-4 text-white">
                     Message {user.name}
                   </h5>
-                  <p>contact form</p>
+                  <ContactForm authorEmail={user.email} />
                 </div>
               </div>
             </div>

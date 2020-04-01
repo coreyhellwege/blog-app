@@ -2,7 +2,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { emailContactForm } from "../../actions/form";
 
-const ContactForm = () => {
+const ContactForm = ({ authorEmail }) => {
   const [values, setValues] = useState({
     message: "",
     name: "",
@@ -24,7 +24,7 @@ const ContactForm = () => {
       buttonText: "Sending..."
     });
     // send data to backend
-    emailContactForm({ name, email, message }).then(data => {
+    emailContactForm({ authorEmail, name, email, message }).then(data => {
       if (data.error) {
         setValues({ ...values, error: data.error });
       } else {
