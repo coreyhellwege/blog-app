@@ -1,30 +1,31 @@
 const express = require("express");
 const router = express.Router();
+
+// controller methods
 const {
   signup,
   signin,
   signout,
-  requireSignin
+  requireSignin,
+  forgotPassword,
+  resetPassword
 } = require("../controllers/auth");
 
 // validators
 const { runValidation } = require("../validators");
 const {
   userSignUpValidator,
-  userSignInValidator
+  userSignInValidator,
+  forgotPasswordValidator,
+  resetPasswordValidator
 } = require("../validators/auth");
 
 // handle incoming routes & run validators on the requests
 router.post("/signup", userSignUpValidator, runValidation, signup);
 router.post("/signin", userSignInValidator, runValidation, signin);
 router.get("/signout", signout);
-
-// test
-// router.get("/secret", requireSignin, (req, res) => {
-//   res.json({
-//     user: req.user
-//   });
-// });
+router.put('/forgot-password', forgotPasswordValidator, runValidation, forgotPassword);
+router.put('/reset-password', resetPasswordValidator, runValidation, resetPassword);
 
 // export routes
 module.exports = router;

@@ -4,6 +4,8 @@ const shortId = require("shortid");
 const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
 const { errorHandler } = require("../helpers/dbErrorHandler");
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 exports.signup = (req, res) => {
   // check if username alraedy exists
@@ -132,3 +134,48 @@ exports.canUpdateDeleteBlog = (req, res, next) => {
     next();
   });
 };
+
+exports.forgotPassword = (req, res) => {
+  // get the user's email
+  const { email } = req.body;
+  // check if user exists
+  User.findOne({ email}, (err, user) => {
+    if (err || !user) {
+      return res.status(401).json({
+        error: 'User does not exist'
+      })
+    }
+    // generate a token
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_RESET_PASSWORD, { expiresIn: '10m' })
+    // email the token to the user
+    const emailData = {
+      from: process.env.EMAIL_FROM,
+      to: email,
+      subject: `Reset password link - ${process.env.APP_NAME}`,
+      html: `
+          <p>Please click on the following link to reset your password:</p>
+          <p>${process.env.CLIENT_URL}/auth/password/reset/${token}</p>
+          <hr />
+          <p>This email may contain sensitive information</p>
+          <p>https://climatefacts.com</p>
+      `
+    };
+    // save user's resetPasswordLink to db
+    return user.updateOne({ resetPasswordLink: token }, (err, success) => {
+      if (err) {
+        return res.json({ error: errorHandler(err) })
+      } else {
+        // send the email
+        sgMail.send(emailData).then(sent => {
+          return res.json({
+            message: `Reset password link has been sent to ${email}`
+          })
+        })
+      }
+    })
+  })
+}
+
+exports.resetPassword = (req, res) => {
+
+}
