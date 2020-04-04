@@ -219,7 +219,7 @@ exports.resetPassword = (req, res) => {
             }
             // success
             res.json({
-              message: "Password successfully changed. Please log in."
+              message: "Password successfully reset. Please log in."
             });
           });
         });

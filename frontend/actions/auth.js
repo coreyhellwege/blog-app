@@ -156,7 +156,7 @@ export const resetPassword = resetInfo => {
       Accept: "application/json",
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ resetInfo })
+    body: JSON.stringify(resetInfo)
   })
     .then(response => {
       return response.json();
