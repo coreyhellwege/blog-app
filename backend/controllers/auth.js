@@ -3,6 +3,7 @@ const Blog = require("../models/blog");
 const shortId = require("shortid");
 const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
+const _ = require("lodash");
 const { errorHandler } = require("../helpers/dbErrorHandler");
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -139,14 +140,16 @@ exports.forgotPassword = (req, res) => {
   // get the user's email
   const { email } = req.body;
   // check if user exists
-  User.findOne({ email}, (err, user) => {
+  User.findOne({ email }, (err, user) => {
     if (err || !user) {
       return res.status(401).json({
-        error: 'User does not exist'
-      })
+        error: "User does not exist"
+      });
     }
     // generate a token
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_RESET_PASSWORD, { expiresIn: '10m' })
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_RESET_PASSWORD, {
+      expiresIn: "10m"
+    });
     // email the token to the user
     const emailData = {
       from: process.env.EMAIL_FROM,
@@ -163,19 +166,64 @@ exports.forgotPassword = (req, res) => {
     // save user's resetPasswordLink to db
     return user.updateOne({ resetPasswordLink: token }, (err, success) => {
       if (err) {
-        return res.json({ error: errorHandler(err) })
+        return res.json({ error: errorHandler(err) });
       } else {
         // send the email
         sgMail.send(emailData).then(sent => {
           return res.json({
             message: `Reset password link has been sent to ${email}`
-          })
-        })
+          });
+        });
       }
-    })
-  })
-}
+    });
+  });
+};
 
 exports.resetPassword = (req, res) => {
+  // grab reset password link and new password
+  const { resetPasswordLink, newPassword } = req.body;
 
-}
+  // find user based on the reset password link
+  if (resetPasswordLink) {
+    // make sure the token hasnt expired
+    jwt.verify(resetPasswordLink, process.env.JWT_RESET_PASSWORD, function(
+      err,
+      decoded
+    ) {
+      if (err) {
+        return res.status(401).json({
+          error: "Link expired. Please try again."
+        });
+      } else {
+        // find the user
+        User.findOne({ resetPasswordLink }, (err, user) => {
+          if (err || !user) {
+            return res.status(401).json({
+              error: "Something went wrong. Please try again later."
+            });
+          }
+          // update user's password to the new password and reset the password link
+          const updatedFields = {
+            password: newPassword,
+            resetPasswordLink: ""
+          };
+          // use lodash extend method to update user
+          user = _.extend(user, updatedFields);
+
+          user.save((err, result) => {
+            if (err || !user) {
+              return res.status(401).json({
+                // give the error to errorHandler because it's coming fromt the db
+                error: errorHandler(err)
+              });
+            }
+            // success
+            res.json({
+              message: "Password successfully changed. Please log in."
+            });
+          });
+        });
+      }
+    });
+  }
+};
