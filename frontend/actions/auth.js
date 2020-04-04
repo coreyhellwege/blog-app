@@ -131,3 +131,35 @@ export const updateUser = (user, next) => {
     }
   }
 };
+
+export const forgotPassword = email => {
+  // send email to the backend
+  return fetch(`${API}/forgot-password`, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(email)
+  })
+    .then(response => {
+      return response.json();
+    })
+    .catch(err => console.log(err));
+};
+
+export const resetPassword = resetInfo => {
+  // send reset info to the backend
+  return fetch(`${API}/reset-password`, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ resetInfo })
+  })
+    .then(response => {
+      return response.json();
+    })
+    .catch(err => console.log(err));
+};
