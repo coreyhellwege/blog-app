@@ -47,32 +47,72 @@ exports.preSignup = (req, res) => {
   });
 };
 
+// exports.signup = (req, res) => {
+//   // check if username alraedy exists
+//   User.findOne({ email: req.body.email }).exec((err, user) => {
+//     if (user) {
+//       return res.status(400).json({
+//         error: "Email is taken"
+//       });
+//     }
+
+//     // if user doesn't exist yet, create new user
+//     const { name, email, password } = req.body;
+//     let username = shortId.generate(); // generate random username
+//     let profile = `${process.env.CLIENT_URL}/profile/${username}`;
+//     let newUser = new User({ name, email, password, profile, username });
+
+//     newUser.save((error, success) => {
+//       if (error) {
+//         return res.status(400).json({
+//           error: "Could not sign up user"
+//         });
+//       }
+//       res.json({
+//         message: "Signup successful! Sign in"
+//       });
+//     });
+//   });
+// };
+
 exports.signup = (req, res) => {
-  // check if username alraedy exists
-  User.findOne({ email: req.body.email }).exec((err, user) => {
-    if (user) {
-      return res.status(400).json({
-        error: "Email is taken"
-      });
-    }
-
-    // if user doesn't exist yet, create new user
-    const { name, email, password } = req.body;
-    let username = shortId.generate(); // generate random username
-    let profile = `${process.env.CLIENT_URL}/profile/${username}`;
-    let newUser = new User({ name, email, password, profile, username });
-
-    newUser.save((error, success) => {
-      if (error) {
-        return res.status(400).json({
-          error: "Could not sign up user"
+  const token = req.body.token;
+  if (token) {
+    // make sure token hasn't expired
+    jwt.verify(token, process.env.JWT_ACCOUNT_ACTIVATION, function(
+      err,
+      decoded
+    ) {
+      if (err) {
+        return res.status(401).json({
+          error: "Expired link. Please sign up again."
         });
       }
-      res.json({
-        message: "Signup successful! Sign in"
+      // get data from the decoded token
+      const { name, email, password } = jwt.decode(token);
+
+      // create username and profile
+      let username = shortId.generate(); // generate random unique username
+      let profile = `${process.env.CLIENT_URL}/profile/${username}`;
+
+      // create the new user
+      const user = new User({ name, email, password, profile, username });
+      user.save((err, user) => {
+        if (err) {
+          return res.status(401).json({
+            error: errorHandler(err)
+          });
+        }
+        return res.json({
+          message: "Sign up successful! Please sign in."
+        });
       });
     });
-  });
+  } else {
+    return res.json({
+      message: "Something went wrong. Please try again later."
+    });
+  }
 };
 
 exports.signin = (req, res) => {

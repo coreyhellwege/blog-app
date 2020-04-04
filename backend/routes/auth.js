@@ -23,7 +23,7 @@ const {
 
 // handle incoming routes & run validators on the requests
 router.post("/pre-signup", userSignUpValidator, runValidation, preSignup);
-router.post("/signup", userSignUpValidator, runValidation, signup);
+router.post("/signup", signup);
 router.post("/signin", userSignInValidator, runValidation, signin);
 router.get("/signout", signout);
 router.put(
