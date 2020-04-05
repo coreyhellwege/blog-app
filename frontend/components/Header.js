@@ -38,7 +38,9 @@ const Header = () => {
     <React.Fragment>
       <Navbar color="light" light expand="md">
         <Link href="/">
-          <NavLink className="font-weight-bold">{APP_NAME}</NavLink>
+          <NavLink style={{ cursor: "pointer" }} className="font-weight-bold">
+            {APP_NAME}
+          </NavLink>
         </Link>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
@@ -46,13 +48,13 @@ const Header = () => {
             <React.Fragment>
               <NavItem>
                 <Link href="/blogs">
-                  <NavLink>Blogs</NavLink>
+                  <NavLink style={{ cursor: "pointer" }}>Blogs</NavLink>
                 </Link>
               </NavItem>
 
               <NavItem>
                 <Link href="/contact">
-                  <NavLink>Contact</NavLink>
+                  <NavLink style={{ cursor: "pointer" }}>Contact</NavLink>
                 </Link>
               </NavItem>
             </React.Fragment>
@@ -61,12 +63,12 @@ const Header = () => {
               <React.Fragment>
                 <NavItem>
                   <Link href="/signin">
-                    <NavLink>Sign In</NavLink>
+                    <NavLink style={{ cursor: "pointer" }}>Sign In</NavLink>
                   </Link>
                 </NavItem>
                 <NavItem>
                   <Link href="/signup">
-                    <NavLink>Sign Up</NavLink>
+                    <NavLink style={{ cursor: "pointer" }}>Sign Up</NavLink>
                   </Link>
                 </NavItem>
               </React.Fragment>
@@ -75,7 +77,9 @@ const Header = () => {
             {isAuth() && isAuth().role === 0 && (
               <NavItem>
                 <Link href="/user">
-                  <NavLink>{`${isAuth().name}'s Dashboard`}</NavLink>
+                  <NavLink style={{ cursor: "pointer" }}>
+                    {`${isAuth().name}'s Dashboard`}
+                  </NavLink>
                 </Link>
               </NavItem>
             )}
@@ -83,7 +87,9 @@ const Header = () => {
             {isAuth() && isAuth().role === 1 && (
               <NavItem>
                 <Link href="/admin">
-                  <NavLink>{`${isAuth().name}'s Dashboard`}</NavLink>
+                  <NavLink style={{ cursor: "pointer" }}>
+                    {`${isAuth().name}'s Dashboard`}
+                  </NavLink>
                 </Link>
               </NavItem>
             )}
@@ -99,11 +105,10 @@ const Header = () => {
               </NavItem>
             )}
             <NavItem>
-              <Link href="/user/crud/blog">
-                <NavLink className="btn btn-primary text-light">
-                  Write a blog
-                </NavLink>
-              </Link>
+              {/* We're using an anchor tag here instead of Link to force reload the page. This is because the whole WYSIWYG text editor package needs to be loaded, otherwise the CSS won't load and it will look weird in the UI. */}
+              <a href="/user/crud/blog" className="btn btn-primary text-light">
+                Write a blog
+              </a>
             </NavItem>
           </Nav>
         </Collapse>
