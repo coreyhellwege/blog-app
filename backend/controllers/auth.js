@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
 const _ = require("lodash");
 const { errorHandler } = require("../helpers/dbErrorHandler");
+const { OAuth2Client } = require("google-auth-library");
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -305,4 +306,81 @@ exports.resetPassword = (req, res) => {
       }
     });
   }
+};
+
+// GOOGLE OAUTH LOGIN CONTROLLER METHOD
+
+// get the client ID
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+exports.googleLogin = (req, res) => {
+  // get token from the frontend
+  const idToken = req.body.tokenId;
+  // verify the token using the client
+  client
+    .verifyIdToken({ idToken, audience: process.env.GOOGLE_CLIENT_ID })
+    .then(response => {
+      // console.log(response);
+      // get user info
+      const { email_verified, name, email, jti } = response.payload;
+
+      if (email_verified) {
+        // find user in our db based on the provided email
+        User.findOne({ email }).exec((err, user) => {
+          if (user) {
+            // console.log(user);
+            // create token
+            const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+              expiresIn: "1d"
+            });
+            // save to cookies
+            res.cookie("token", token, { expiresIn: "1d" });
+            // destructure user attributes
+            const { _id, email, name, role, username } = user;
+            // return user's info to the client side
+            return res.json({
+              token,
+              user: { _id, email, name, role, username }
+            });
+          } else {
+            // if user doesn't exist, create them
+            let username = shortId.generate(); // generate random unique username
+            let profile = `${process.env.CLIENT_URL}/profile/${username}`;
+            // jti is a unique id which we will utilize to create a password for the user within our application (just to keep within our app's structure)
+            let password = jti + process.env.JWT_SECRET;
+
+            user = new User({ name, email, profile, username, password });
+            user.save((err, data) => {
+              if (err) {
+                return res.status(400).json({
+                  error: errorHandler(err)
+                });
+              }
+              // create token
+              const token = jwt.sign(
+                { _id: user._id },
+                process.env.JWT_SECRET,
+                {
+                  expiresIn: "1d"
+                }
+              );
+              // save to cookies
+              res.cookie("token", token, { expiresIn: "1d" });
+              // destructure user attributes
+              const { _id, email, name, role, username } = user;
+              // return user's info to the client side
+              return res.json({
+                token,
+                user: { _id, email, name, role, username }
+              });
+            });
+          }
+        });
+      } else {
+        // if email is not verified
+        return res.status(400).json({
+          error: "Google login failed. Please try again."
+        });
+      }
+    });
 };
