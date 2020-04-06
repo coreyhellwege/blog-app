@@ -6,6 +6,11 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+// SSL cert stuff
+const path = require('path')
+const fs = require('fs')
+const https = require('https')
+
 // bring in routes
 const blogRoutes = require("./routes/blog");
 const authRoutes = require("./routes/auth");
@@ -50,6 +55,17 @@ app.use("/api", formRoutes);
 // port
 const port = process.env.PORT || 8000; // use the port in our env file or default 8000
 
-app.listen(port, () => {
+// app.listen(port, () => {
+//   console.log(`Server is running on port ${port}`);
+// });
+
+// SSL cert
+var certOptions = {
+  key: fs.readFileSync(path.resolve('build/cert/mydomain.com.key')),
+  cert: fs.readFileSync(path.resolve('build/cert/mydomain.com.crt')),
+  passphrase: 'mydogsnameismisty'
+}
+
+https.createServer(certOptions, app).listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
