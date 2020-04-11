@@ -308,7 +308,7 @@ exports.resetPassword = (req, res) => {
   }
 };
 
-// GOOGLE OAUTH LOGIN CONTROLLER METHOD
+// GOOGLE OAUTH2 LOGIN CONTROLLER METHOD
 
 // get the client ID
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -383,4 +383,68 @@ exports.googleLogin = (req, res) => {
         });
       }
     });
+};
+
+// FACEBOOK OAUTH2 LOGIN CONTROLLER METHOD
+
+exports.facebookLogin = (req, res) => {
+  // get user info from the frontend
+  const idToken = req.body.tokenId;
+  const name = req.body.name;
+  const email = req.body.email;
+
+  if (idToken) {
+    // find user in our db based on the provided email
+    User.findOne({ email }).exec((err, user) => {
+      // if user already exists
+      if (user) {
+        // create token
+        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+          expiresIn: "1d"
+        });
+        // save to cookies
+        res.cookie("token", token, { expiresIn: "1d" });
+        // destructure user attributes
+        const { _id, email, name, role, username } = user;
+        // return user's info to the client side
+        return res.json({
+          token,
+          user: { _id, email, name, role, username }
+        });
+      } else {
+        // if user doesn't exist, create them
+        let username = shortId.generate(); // generate random unique username
+        let profile = `${process.env.CLIENT_URL}/profile/${username}`;
+        let password = idToken + process.env.JWT_SECRET; // we can just use the unique accessToken
+
+        user = new User({ name, email, profile, username, password });
+        console.log(user);
+        
+        user.save((err, data) => {
+          if (err) {
+            return res.status(400).json({
+              error: err
+            });
+          }
+          // create token
+          const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+            expiresIn: "1d"
+          });
+          // save to cookies
+          res.cookie("token", token, { expiresIn: "1d" });
+          // destructure user attributes
+          const { _id, email, name, role, username } = user;
+          // return user's info to the client side
+          return res.json({
+            token,
+            user: { _id, email, name, role, username }
+          });
+        });
+      }
+    });
+  } else {
+    return res.status(400).json({
+      error: "Facebook login failed. Please try again."
+    });
+  }
 };

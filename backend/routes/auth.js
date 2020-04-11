@@ -10,7 +10,8 @@ const {
   requireSignin,
   forgotPassword,
   resetPassword,
-  googleLogin
+  googleLogin,
+  facebookLogin
 } = require("../controllers/auth");
 
 // validators
@@ -42,6 +43,9 @@ router.put(
 
 // google login
 router.post("/google-login", googleLogin);
+
+// facebook login
+router.post("/facebook-login", facebookLogin);
 
 // export routes
 module.exports = router;

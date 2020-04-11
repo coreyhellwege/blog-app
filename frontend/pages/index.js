@@ -9,7 +9,7 @@ const Index = () => {
           <div className="row">
             <div className="col-md-12 text-center">
               <h1 className="display-4 font-weight-bold">
-                PROGRAMMING & WEB DEVELOPMENT BLOGS/TUTORIALS
+                Climate Science for Dummies
               </h1>
             </div>
           </div>
@@ -19,8 +19,7 @@ const Index = () => {
           <div className="row">
             <div className="col-md-12 text-center pt-4 pb-5">
               <p className="lead">
-                Best programming and web development blogs and tutorials on
-                React Node NextJs and JavaScript
+                Easy-to-digest, bite-sized facts for anyone to understand!
               </p>
             </div>
           </div>
