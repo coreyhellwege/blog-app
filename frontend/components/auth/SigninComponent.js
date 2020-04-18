@@ -97,8 +97,10 @@ const SigninComponent = () => {
       {showError()}
       {showLoading()}
       {showMessage()}
-      <LoginGoogle />
-      <LoginFacebook />
+      <div style={{ display: "flex" }}>
+        <LoginGoogle />
+        <LoginFacebook />
+      </div>
       {showForm && signinForm()}
       <br />
       <Link href="/auth/password/forgot">

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { preSignup, signup, isAuth } from "../../actions/auth";
 import Router from "next/router";
 import Link from "next/link";
+import LoginGoogle from "./LoginGoogle";
+import LoginFacebook from "./LoginFacebook";
 
 const SignupComponent = () => {
   // state
@@ -106,6 +108,10 @@ const SignupComponent = () => {
       {showError()}
       {showLoading()}
       {showMessage()}
+      <div style={{ display: "flex" }}>
+        <LoginGoogle />
+        <LoginFacebook />
+      </div>
       {showForm && signupForm()}
       <br />
       <Link href="/auth/password/forgot">

@@ -40,13 +40,15 @@ const LoginFacebook = () => {
 
   // todo: save fb photo for our profile image
   return (
-    <div>
+    <div className="pl-3">
       <FacebookLogin
         appId={`${FACEBOOK_APP_ID}`}
         autoLoad={false}
         fields="name,email,picture"
         // onClick={responseFacebook}
         callback={responseFacebook}
+        icon="fa-facebook"
+        cssClass="fb-button"
       />
     </div>
   );
