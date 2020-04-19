@@ -4,16 +4,21 @@ import Router from "next/router";
 import Link from "next/link";
 import LoginGoogle from "./LoginGoogle";
 import LoginFacebook from "./LoginFacebook";
+import { connect } from "react-redux";
+import { setAlert } from "../../redux/actions/alert";
+import PropTypes from "prop-types";
 
-const SigninComponent = () => {
+const SigninComponent = ({ setAlert }) => {
+  // get props from redux and destructure for cleaner syntax
+
   // state
   const [values, setValues] = useState({
-    email: "corey@example.com",
-    password: "password",
+    email: "",
+    password: "",
     error: "",
     loading: false,
     message: "",
-    showForm: true
+    showForm: true,
   });
 
   const { email, password, error, loading, message, showForm } = values; // destructuring
@@ -23,12 +28,12 @@ const SigninComponent = () => {
     isAuth() && Router.push(`/`);
   }, []);
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setValues({ ...values, loading: true, error: false });
     const user = { email, password };
 
-    signin(user).then(data => {
+    signin(user).then((data) => {
       if (data.error) {
         setValues({ ...values, error: data.error, loading: false });
       } else {
@@ -48,7 +53,7 @@ const SigninComponent = () => {
   };
 
   // func which returns a func
-  const handleChange = name => e => {
+  const handleChange = (name) => (e) => {
     // keep existing values and set new values
     setValues({ ...values, error: false, [name]: event.target.value });
   };
@@ -56,11 +61,12 @@ const SigninComponent = () => {
   const showLoading = () =>
     loading ? <div className="alert alert-info">Loading...</div> : "";
 
-  const showError = () =>
-    error ? <div className="alert alert-danger">{error}</div> : "";
+  const showError = () => (error ? setAlert(error, "danger") : "");
 
-  const showMessage = () =>
-    message ? <div className="alert alert-info">{message}</div> : "";
+  // console.log("ERROR:");
+  // console.log(error);
+
+  const showMessage = () => (message ? setAlert(message, "info") : "");
 
   const signinForm = () => {
     return (
@@ -97,6 +103,7 @@ const SigninComponent = () => {
       {showError()}
       {showLoading()}
       {showMessage()}
+
       <div style={{ display: "flex" }}>
         <LoginGoogle />
         <LoginFacebook />
@@ -110,4 +117,9 @@ const SigninComponent = () => {
   );
 };
 
-export default SigninComponent;
+SigninComponent.propTypes = {
+  setAlert: PropTypes.func.isRequired,
+};
+
+// connect takes 2 params: State you wish to import, & object with actions you wish to use
+export default connect(null, { setAlert })(SigninComponent);

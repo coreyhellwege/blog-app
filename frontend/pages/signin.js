@@ -1,6 +1,7 @@
 import Layout from "../components/Layout";
 import { withRouter } from "next/router";
 import SigninComponent from "../components/auth/SigninComponent";
+import Alert from "../components/auth/Alert";
 
 const Signin = ({ router }) => {
   const showRedirectMessage = () => {
@@ -19,6 +20,7 @@ const Signin = ({ router }) => {
         </div>
         <div className="row">
           <div className="col-md-6 offset-md-3">
+            <Alert />
             <SigninComponent />
           </div>
         </div>
