@@ -6,14 +6,11 @@ const Alert = ({ alerts }) =>
   // map through the alerts and output the message
   alerts !== null &&
   alerts.length > 0 &&
-  alerts.map((alert) => {
+  alerts.map((alert) => (
     <div key={alert.id} className={`alert alert-${alert.alertType}`}>
       {alert.msg}
-    </div>;
-  });
-
-// console.log("HERE");
-// console.log(alert.msg);
+    </div>
+  ));
 
 Alert.propTypes = {
   alerts: PropTypes.array.isRequired,

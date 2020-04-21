@@ -63,9 +63,6 @@ const SigninComponent = ({ setAlert }) => {
 
   const showError = () => (error ? setAlert(error, "danger") : "");
 
-  // console.log("ERROR:");
-  // console.log(error);
-
   const showMessage = () => (message ? setAlert(message, "info") : "");
 
   const signinForm = () => {
@@ -103,7 +100,6 @@ const SigninComponent = ({ setAlert }) => {
       {showError()}
       {showLoading()}
       {showMessage()}
-
       <div style={{ display: "flex" }}>
         <LoginGoogle />
         <LoginFacebook />
