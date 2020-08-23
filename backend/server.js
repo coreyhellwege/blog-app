@@ -7,9 +7,9 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 // bring in routes
-const blogRoutes = require("./routes/blog");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
+const blogRoutes = require("./routes/blog");
 const categoryRoutes = require("./routes/category");
 const tagRoutes = require("./routes/tag");
 const formRoutes = require("./routes/form");
@@ -40,9 +40,9 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 // routes middleware
-app.use("/api", blogRoutes); // prefix all routes with '/api'
-app.use("/api", authRoutes);
+app.use("/api", authRoutes); // prefix all routes with '/api'
 app.use("/api", userRoutes);
+app.use("/api", blogRoutes);
 app.use("/api", categoryRoutes);
 app.use("/api", tagRoutes);
 app.use("/api", formRoutes);
